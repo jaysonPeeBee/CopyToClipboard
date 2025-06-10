@@ -9,7 +9,7 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      background: transparent;
+      background-color: transparent;
       overflow: hidden;
     }
 
@@ -20,6 +20,7 @@
       left: 0;
       width: 100%;
       height: 100%;
+      background: transparent;
       cursor: pointer;
       z-index: 2;
     }
@@ -37,6 +38,7 @@
 
     #feedback.visible {
       opacity: 1;
+      transition: none; /* Show instantly */
     }
   </style>
 </head>
@@ -45,19 +47,18 @@
   <img id="feedback" src="https://jaysonpeebee.github.io/CopyToClipboard/clipboard_feedback.png" width="100" height="100" alt="Copied!" />
 
   <script>
-    function copyToClipboard() {
-      navigator.clipboard.writeText("this should have coppied the CA")
+    document.getElementById("copyButton").addEventListener("click", function () {
+      navigator.clipboard.writeText("Your copied text here")
         .then(() => {
-          const img = document.getElementById('feedback');
-          img.classList.add('visible');
-          setTimeout(() => {
-            img.classList.remove('visible');
-          }, 1000);
+          const feedback = document.getElementById("feedback");
+          feedback.classList.add("visible");
+          // Trigger reflow to restart transition
+          void feedback.offsetWidth;
+          feedback.style.transition = "opacity 1s ease-out";
+          feedback.style.opacity = "0";
         })
-        .catch(err => console.error("Failed to copy", err));
-    }
-
-    document.getElementById("copyButton").addEventListener("click", copyToClipboard);
+        .catch(err => console.error("Copy failed:", err));
+    });
   </script>
 </body>
 </html>
