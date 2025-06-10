@@ -10,6 +10,7 @@
       padding: 0;
       height: 100%;
       background: transparent;
+      overflow: hidden;
     }
 
     #copyButton {
@@ -31,6 +32,7 @@
       opacity: 0;
       transition: opacity 1s ease-out;
       z-index: 1;
+      pointer-events: none;
     }
 
     #feedback.visible {
@@ -40,7 +42,7 @@
 </head>
 <body>
   <button id="copyButton" aria-label="Copy"></button>
-  <img id="feedback" src="clipboard_feedback.png" width="100" height="100" alt="Copied!" />
+  <img id="feedback" src="https://jaysonpeebee.github.io/CopyToClipboard/clipboard_feedback.png" width="100" height="100" alt="Copied!" />
 
   <script>
     function copyToClipboard() {
@@ -50,7 +52,7 @@
           img.classList.add('visible');
           setTimeout(() => {
             img.classList.remove('visible');
-          }, 1000); // fade out after 1s
+          }, 1000);
         })
         .catch(err => console.error("Failed to copy", err));
     }
