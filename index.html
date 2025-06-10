@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Copy Button</title>
+  <title>Invisible Copy Button with Feedback</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      width: 100%;
-      background: transparent;
+      background-color: transparent;
       overflow: hidden;
     }
 
     #copyButton {
       all: unset;
       position: absolute;
-      inset: 0;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       background: transparent;
@@ -30,37 +30,34 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 100px;
-      height: 100px;
       opacity: 0;
-      pointer-events: none;
       transition: opacity 1s ease-out;
       z-index: 1;
+      pointer-events: none;
     }
 
-    #feedback.show {
+    #feedback.visible {
       opacity: 1;
+      transition: none; /* Show instantly */
     }
   </style>
 </head>
 <body>
-  <button id="copyButton" aria-label="Copy to clipboard"></button>
-  <img id="feedback" src="clipboard_feedback.png" alt="Copied!" />
+  <button id="copyButton" aria-label="Copy"></button>
+  <img id="feedback" src="https://jaysonpeebee.github.io/CopyToClipboard/clipboard_feedback.png" width="100" height="100" alt="Copied!" />
 
   <script>
-    const textToCopy = "Your copied text here";
-    const button = document.getElementById("copyButton");
-    const feedback = document.getElementById("feedback");
-
-    button.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(textToCopy);
-        feedback.classList.add("show");
-        setTimeout(() => feedback.classList.remove("show"), 1000);
-      } catch (err) {
-        console.error("Clipboard copy failed", err);
-        alert("Clipboard copy failed — browser may be blocking it.");
-      }
+    document.getElementById("copyButton").addEventListener("click", function () {
+      navigator.clipboard.writeText("Your copied text here")
+        .then(() => {
+          const feedback = document.getElementById("feedback");
+          feedback.classList.add("visible");
+          // Trigger reflow to restart transition
+          void feedback.offsetWidth;
+          feedback.style.transition = "opacity 1s ease-out";
+          feedback.style.opacity = "0";
+        })
+        .catch(err => console.error("Copy failed:", err));
     });
   </script>
 </body>
