@@ -9,56 +9,67 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      background-color: transparent;
+      background: transparent;
       overflow: hidden;
+      cursor: pointer;
     }
-
     #copyButton {
       all: unset;
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: transparent;
       cursor: pointer;
       z-index: 2;
     }
-
     #feedback {
       position: absolute;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       opacity: 0;
       transition: opacity 1s ease-out;
       z-index: 1;
       pointer-events: none;
     }
-
-    #feedback.visible {
+    #feedback.show {
       opacity: 1;
-      transition: none; /* Show instantly */
+      transition: opacity 0s;
     }
   </style>
 </head>
 <body>
   <button id="copyButton" aria-label="Copy"></button>
-  <img id="feedback" src="https://jaysonpeebee.github.io/CopyToClipboard/clipboard_feedback.png" width="100" height="100" alt="Copied!" />
-
+  <img id="feedback"
+       src="https://jaysonpeebee.github.io/CopyToClipboard/clipboard_feedback.png"
+       width="100" height="100" alt="Copied!" />
   <script>
-    document.getElementById("copyButton").addEventListener("click", function () {
-      navigator.clipboard.writeText("Your copied text here")
-        .then(() => {
-          const feedback = document.getElementById("feedback");
-          feedback.classList.add("visible");
-          // Trigger reflow to restart transition
-          void feedback.offsetWidth;
-          feedback.style.transition = "opacity 1s ease-out";
-          feedback.style.opacity = "0";
-        })
-        .catch(err => console.error("Copy failed:", err));
-    });
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = 0;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+      } catch(e) { console.warn('Fallback copy failed', e); }
+      document.body.removeChild(ta);
+    }
+
+    function copyAction() {
+      const text = "Your copied text here";
+      const promise = navigator.clipboard
+        ? navigator.clipboard.writeText(text)
+        : Promise.resolve(fallbackCopy(text));
+      promise.then(() => {
+        const fb = document.getElementById('feedback');
+        fb.classList.add('show');
+        setTimeout(() => fb.style.opacity = '0', 0);
+      }).catch(console.error);
+    }
+
+    document.getElementById('copyButton').addEventListener('click', copyAction);
   </script>
 </body>
 </html>
